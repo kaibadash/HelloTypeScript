@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>TypeScript(MS製AltJS)の紹介(Node.js、ビルドツールgulpを添えて)</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+		<script>
+			if( window.location.search.match( /print-pdf/gi ) ) {
+				var link = document.createElement( 'link' );
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = 'css/print/pdf.css';
+				document.getElementsByTagName( 'head' )[0].appendChild( link );
+			}
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+
+<!-- ここからプレゼン開始 -->
+<section data-markdown
+    data-separator="\n---\n$"
+    data-vertical="\n--\n">
+<script type="text/template">
+
+#TypeScript紹介
+～Node.js、自動ビルドツールgulpを添えて～
+
+![french](../cook.jpg)
+
+### @kaiba
+---
+
+##TypeScript
+- altJS(Alternative JavaScript)の一種
+- Microsoft製
+  - 2014/4月に1.0リリース
+- OSS色が強い
+  - TypeScript自体OSSでリポジトリはGitHub(CodePlexではない)
+  - Node.jsのモジュールとして提供される
+- VisualStudioでも動く
+  - VS2013からバンドル。VS2012にもインストール可能。
+- 3rd party製ではありますが、WebStorm、Eclipse、Vimなどでも書ける
+---
+
+##JavaScriptの問題(個人的見解)
+- functionとhashで表現するオブジェクト指向
+  - functionを書いてボタンから呼び出す程度であれば読みやすい
+  - オブジェクト指向っぽく書こうとすると途端に難しくなる
+- 動的型付け
+  - if (123 == "123")
+- 実行するまでエラーがわからない
+  - getElementByID("xxx")
+- null? undefined?
+- thisの実態が時と場合により違う
+- parseInt("081")
+---
+
+```javascript
+/**
+* 人を表すクラス。名前をメンバ変数に持つ。
+*/
+var Person = (function () {
+    /**
+    * コンストラクタ
+    * @param name 名前
+    */
+    function Person(name) {
+        this.name = name;
+    }
+    /**
+    * 名前を返す。
+    * @return 名前
+    */
+    Person.prototype.getName = function () {
+        return this.name;
+    };
+    return Person;
+})();
+
+```
+---
+
+##「読みづらい」
+##「書きづらい」
+---
+
+##そこでaltJS
+---
+
+##altJS
+- CoffeeScript
+- Dart
+- TypeScript
+- Haxe
+- JSX
+---
+
+## google trend
+![trend](../trend.png) 
+---
+
+##改めてTypeScript
+
+---
+
+## classベースのオブジェクト指向
+## 静的型付け
+
+```javascript
+/**
+ * 人を表すクラス。名前をメンバ変数に持つ。
+ */
+class Person {
+	/** 名前 */
+	private name : string;
+	
+	/**
+	 * コンストラクタ
+	 * @name 名前
+	 */
+	constructor(name : string) {
+		this.name = name;
+	}
+	
+	/**
+	 * 名前を返す。
+	 * @return 名前
+	 */
+	getName() : string {
+		return this.name;
+	}
+}
+```
+---
+
+## コンパイルされるJavaScriptが美しい
+
+```javascript
+/**
+* 人を表すクラス。名前をメンバ変数に持つ。
+*/
+var Person = (function () {
+    /**
+    * コンストラクタ
+    * @param name 名前
+    */
+    function Person(name) {
+        this.name = name;
+    }
+    /**
+    * 名前を返す。
+    * @return 名前
+    */
+    Person.prototype.getName = function () {
+        return this.name;
+    };
+    return Person;
+})();
+```
+いざとなったらTypeScriptを捨ててJavaScriptを使うこともできる。
+(さっきdisったコードだけど…)
+
+---
+
+## JavaScriptのスーパーセット
+## EcmaScript6の仕様を取り入れている
+- EcmaScript6に移行しやすい
+- JavaScriptの知識を使える
+- JavaScriptの闇を引き継ぐ…
+---
+
+## SourceMapにも対応しデバッグしやすい
+- 動作するのはコンパイルされたJavaScriptだが、あたかもTypeScriptが動いているように、デバッグできる。
+---
+
+## 既存のライブラリも使える(jQueryとか)
+- ライブラリの関数一覧を静的型付けしたDefinitelyTyped(プロトタイプ宣言のようなもの)が必要
+- 有志が作成している。DLして読み込むだけ。拡張子d.ts
+  - https://github.com/borisyankov/DefinitelyTyped
+- 上記からライブラリを探してDLして配置するだけ。でも面倒なのでtsdを使いましょうってわかめさんが言ってた。
+  - https://github.com/DefinitelyTyped/tsd
+- プロトタイプ宣言みたいのを書くだけなので、自分で作るのも難しくは無い(面倒だけど)
+  - http://qiita.com/vvakame/items/1980d4b6cc222e03fdcb
+---
+
+## 実例
+---
+
+## サンプルの説明
+
+- 動物プログラム。体重と鳴き声を管理する。
+- 体重の処理は動物の種類に関わらず共通。鳴き声は動物の種類、状態によって違う。
+- 今回は、犬、ヤギを作ってみる。
+- jQueryでHTMLに結果を表示してみる
+---
+
+## クラス図
+![trend](../class.jpg) 
+---
+
+## 動物インタフェース Animal.ts
+```java
+/**
+ * 動物インタフェース
+ */
+interface Animal {
+	/**
+	 * 鳴き声を返す。
+	 * @return 鳴き声の文字列
+	 */
+	barks(): string;
+	/**
+	 * 重さを返す。単位はkg。
+	 * @return 重さ
+	 */
+	getWeight(): number;
+}
+```
+---
+
+## 動物ベースクラス AnimalBase.ts
+```java
+/**
+ * 動物抽象クラス。
+ * TypeScriptに抽象クラスはないので、抽象メソッドは例外を投げる。
+ */
+class AnimalBase implements Animal {
+	private weight : number;
+	
+	/**
+	 * コンストラクタ
+	 */
+	constructor(weight : number) {
+		this.weight = weight;
+	}
+	
+	/**
+	 * 鳴き声を返す。
+	 * @return 鳴き声の文字列
+	 */
+	barks(): string {
+		throw new Error('This method is abstract');
+	}
+	
+	/**
+	 * 重さを返す。単位はkg。
+	 * @return 重さ
+	 */
+	getWeight() : number {
+		return this.weight;
+	}
+}
+```
+
+abstractの機能はTypeScriptにはない…。開発予定もない…。
+---
+
+## 実装クラス
+### Dog.ts
+```java
+/**
+ * 猫より愛しい犬クラス。
+ */
+class Dog extends AnimalBase {
+	/**
+	 * コンストラクタ
+	 */
+	constructor() {
+		super(15);
+	}
+	
+	/**
+	 * 鳴き声を返す。バウと鳴く。
+	 * @return 鳴き声の文字列
+	 */
+	barks(): string {
+		return "Bow!";
+	}
+}
+```
+---
+
+### Goat.ts
+```
+/**
+ * 動物園のアイドル、ヤギクラス。
+ */
+class Goat extends AnimalBase {
+	/**
+	 * コンストラクタ
+	 */
+	constructor() {
+		super(30);
+	}
+	
+	/**
+	 * 鳴き声を返す。ムーと鳴く。
+	 * @return 鳴き声の文字列
+	 */
+	barks(): string {
+		return "Moo...";
+	}
+}
+```
+---
+
+## HTML
+![HTML](../html.png) 
+
+---
+
+## テスト用 Main.ts
+```javascript
+/// <reference path="typings/jquery.d.ts" />
+
+/**
+ * HTMLに結果を表示する。
+ * @param id htmlのID
+ * @param animal Animalのインスタンス
+ */
+function showAnimal(id:string, animal:Animal) {
+	console.log(document.getElementById(id));
+	// document.getElementById(id).innerHTML = animal.barks() + " " + animal.getWeight() + "kg";
+	$("#" + id).html(animal.barks() + " " + animal.getWeight() + "kg");
+} 
+
+// main
+window.onload = function() {
+	console.log("hello!!");
+	var dog : Animal = new Dog();
+	var goat : Animal = new Goat();
+	
+	showAnimal("dog", dog);
+	showAnimal("goat", goat);
+}
+```
+
+1行目はコメントではなくライブラリの型定義の読み込みです。
+
+---
+
+## コンパイル
+
+tsc *.ts --sourcemap
+
+このコード量で3秒程度！！！
+
+![hayaku](../hayaku.png)
+
+リリース直前のバグ修正中のベジータ氏
+
+---
+
+## 実行結果
+![result](../result.png) 
+
+(^-^)b
+---
+
+## デバッグ
+![debug](../debug.png) 
+--
+(^-^)b
+
+TypeScriptのコードで変数の中身を見たり、ステップ実行できる！
+---
+
+## もっと便利に
+色々出てきて難しいので聞き流してください
+![neko](../neko.png)
+---
+
+## 環境構築とか自動化とか	
+- コンパイル、ビルド(3秒も掛かる！)、ブラウザで実行
+- コンパイル遅いのでバックで勝手にビルドして欲しい
+- コマンドラインでビルドしたい
+---
+
+## Node.js周りの知識がいるので紹介します
+![tsweb](../tsweb.png)
+
+Node.jsとか…　npmとか…
+
+---
+
+## Node.js
+- 正式名称は "Node"。ややこしい場合は "Node.js"
+- サーバサイドで動くJavaScript実行環境
+  - ブラウザが無くても動く
+  - ということはバッチとかクライアントアプリも書ける
+  - document.getElementById() とかはいない
+- WebSocketの実装で一番有名(だと思う)
+- JavaScriptなのでイベント駆動
+- サーバもクライアントもJavaScriptで書ける
+- バージョンアップが頻繁で追従は大変
+
+---
+
+## インストール
+- 公式サイト( http://nodejs.org )から最新のバイナリを… ダメ！絶対！
+---
+
+- 環境構築時期により、バージョンが違う可能性が大。
+- 開発メンバ間でバージョンがバラバラになる
+- 特定モジュールが動かない
+- 特定バージョンをインストールするのは面倒くさそう…？
+
+![hayaku](../jigoku.png)
+
+バージョンを決めておらず、焦るベジータ氏	
+
+---
+
+## そこでnvm 
+- https://github.com/creationix/nvm
+- rubyのrvmと同じイメージ
+  - nvm install 0.10.26
+  - nvm use 0.10.25
+- Windowsとの相性は良くない
+  - 私はVirtualBox(VM)でやってます。
+  - VMは嫌？ MacはUNIXベースです。そう、Macならね。
+- 他にも同類のアプリがある
+---
+
+## やっとnpm
+- Nodeに付属するパッケージマネージャ
+  - aptとかyumとかと同じイメージ
+- 最近は何の断りもなくインストール手順に書かれることが多く、もはや常識
+- npm install -g typescript
+  - TypeScriptのコンパイラ tsc が実行出来るようになります。
+---
+
+## Node.jsとnpmの紹介終わり。
+---
+
+コードを書いたら勝手にコンパイルさせ、ビルドの手間と時間を省いてみます。
+---
+
+## gulp
+- The streaming build system
+  - watchしてbuildしてtestしてdeployとかできる
+- インストールはおなじみnpm
+  - npm install -g gulp
+  - npm install --save-dev gulp
+- 設定ファイルはJavaScriptで記載する
+- antに近い
+- 打倒Grunt
+---
+
+## gulpの設定例
+```javascript
+var gulp = require("gulp");
+var tsc = require("gulp-tsc"); // これもnpmでインストール
+
+var tspath = {
+    "ts": ["ts/*.ts"]
+};
+
+gulp.task("build", function() {
+    gulp.src(tspath.ts)
+        .pipe(tsc({sourcemap: true}))
+        .pipe(gulp.dest("build/"));
+});
+
+gulp.task("watch", function() {
+    gulp.watch(tspath.ts, ["build"]);
+});
+
+gulp.task("default", ["build", "watch"]);
+
+```
+
+gultコマンドを叩くとdefaultが実行される。
+
+---
+
+## 実行例
+![gulp](../gulp.png)
+---
+
+## 書籍紹介
+![book](../book.png)
+
+現在唯一の1.0対応の本。
+
+わかめさん著。
+
+田中Yさんが買ってくれた。
+---
+
+## まとめ
+- TypeScriptはJavaScriptの弱点を補いつつ、現状も考慮しており、バランスが良い。
+- 出力されるJavaScriptがきれいなのでTypeScriptを捨てることもできる。	
+- Microsoftにしては珍しくOSSに貢献しようという姿勢が見える。
+- Node.jsはブラウザいらずのJavaScript実行環境。
+- npmはNode.jsに付属するパッケージマネージャ。
+- gulpはコードの変更を監視してビルドしてくれる。学習コストも低い。
+---
+
+## おしまい
+![neko](../neko.png)
+
+</script>
+</section>
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Parallax scrolling
+				// parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+				// parallaxBackgroundSize: '2100px 900px',
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
